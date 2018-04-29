@@ -1,4 +1,5 @@
 import java.sql.*;
+import com.jcraft.jsch.*; //SSH connection
 import java.util.Date;
 import java.util.List;
 
@@ -9,10 +10,11 @@ import java.util.List;
 public class Database {
 
     Connection conn = null;
-    String url = "";
+    Session session = null;
+    Credentials credentials = null;
 
-    public Database(String url) {
-        this.url = url;
+    public Database(Credentials credentials) {
+        this.credentials = credentials;
         connect();
     }
 
@@ -21,14 +23,57 @@ public class Database {
      */
     public void connect() {
         try {
+            String strSshUser = credentials.getSshId();                  // SSH login username
+            String strSshPassword = credentials.getSshPassword();        // SSH login password
+            String strDbUser = credentials.getSandboxId();               // database loging username
+            String strDbPassword = credentials.getSandboxPassword();     // database login password
+            int nRemotePort = credentials.getDbPort();                   // remote port number of your database
+
+            String strSshHost = "onyx.boisestate.edu";                   // hostname or ip or SSH server
+            int nSshPort = 22;                                           // remote SSH host port number
+            String strRemoteHost = "localhost";                          // hostname or ip of your database server
+            int nLocalPort = 3367;                                       // local port number use to bind SSH tunnel
+
+            //Creates an SSH tunnel
+            session = doSshTunnel(strSshUser, strSshPassword, strSshHost, nSshPort, strRemoteHost, nLocalPort, nRemotePort);
+
             // create a connection to the database
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort, strDbUser, strDbPassword);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        } catch (JSchException e) {
+            e.printStackTrace();
         }
+    }
+
+    /**
+     * Creates an SSH tunnel to be able to connect to the host where the database is located
+     * @param strSshUser
+     * @param strSshPassword
+     * @param strSshHost
+     * @param nSshPort
+     * @param strRemoteHost
+     * @param nLocalPort
+     * @param nRemotePort
+     * @return
+     * @throws JSchException
+     */
+    private static Session doSshTunnel( String strSshUser, String strSshPassword, String strSshHost, int nSshPort, String strRemoteHost, int nLocalPort, int nRemotePort ) throws JSchException
+    {
+        final JSch jsch = new JSch();
+        java.util.Properties configuration = new java.util.Properties();
+        configuration.put("StrictHostKeyChecking", "no");
+
+        Session session = jsch.getSession( strSshUser, strSshHost, 22 );
+        session.setPassword( strSshPassword );
+
+        session.setConfig(configuration);
+        session.connect();
+        session.setPortForwardingL(nLocalPort, strRemoteHost, nRemotePort);
+        return session;
     }
 
     /**

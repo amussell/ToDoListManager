@@ -9,8 +9,8 @@ public class TaskManager {
     String prompt = "TaskManager>";
     Database db;
 
-    public TaskManager(String url) {
-        db = new Database(url);
+    public TaskManager(Credentials credentials) {
+        db = new Database(credentials);
     }
 
     public void run() {
