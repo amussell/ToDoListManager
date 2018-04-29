@@ -33,7 +33,7 @@ public class Database {
             String strSshHost = "onyx.boisestate.edu";                   // hostname or ip or SSH server
             int nSshPort = 22;                                           // remote SSH host port number
             String strRemoteHost = "localhost";                          // hostname or ip of your database server
-            int nLocalPort = 3367;                                       // local port number use to bind SSH tunnel
+            int nLocalPort = 5005;                                       // local port number use to bind SSH tunnel
 
             //Creates an SSH tunnel
             session = doSshTunnel(strSshUser, strSshPassword, strSshHost, nSshPort, strRemoteHost, nLocalPort, nRemotePort);
@@ -72,8 +72,8 @@ public class Database {
         session.setPassword( strSshPassword );
 
         session.setConfig(configuration);
-        session.connect();
         session.setPortForwardingL(nLocalPort, strRemoteHost, nRemotePort);
+        session.connect();
         return session;
     }
 
