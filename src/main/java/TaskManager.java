@@ -1,3 +1,5 @@
+
+import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.Scanner;
 public class TaskManager {
     String prompt = "TaskManager>";
     Database db;
+    boolean running = true;
 
     public TaskManager(Credentials credentials) {
         db = new Database(credentials);
@@ -15,12 +18,12 @@ public class TaskManager {
 
     public void run() {
         Scanner in = new Scanner(System.in);
-        while(true) { //Will stop when "exit" is entered and parseLine calls System.exit()
+        while(running) { //Will stop when "exit" is entered
             System.out.print(prompt);
             String line = in.nextLine();
             parseLine(line);
         }
-
+        db.close();
     }
 
     private void parseLine(String line) {
@@ -38,7 +41,7 @@ public class TaskManager {
         if(command.equals("overdue")) showOverdue(scan.nextLine());
         if(command.equals("rename")) rename(scan.nextLine());
         if(command.equals("search")) search(scan.nextLine());
-        if(command.equals("exit")) System.exit(1);
+        if(command.equals("exit")) running = false;
     }
 
     private void add(String line) {
