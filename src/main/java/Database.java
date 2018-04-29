@@ -37,7 +37,7 @@ public class Database {
      * returns true if setup was successful, false if setup failed.
      */
     public boolean setUp() {
-        String createUsers = "CREATE TABLE users (uuid text, name string, date date, passHash varChar(512), realName string, ipAddress string, primary key (uuid));";
+        String createUsers = "CREATE TABLE task (id ;";
         String createTimeStamp = "CREATE TABLE timeStamp (stamp integer, primary key (stamp));";
         String insertFirstTimeStamp = "Insert into timeStamp values (0);";
         try {
