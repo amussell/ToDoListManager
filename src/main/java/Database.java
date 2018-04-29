@@ -40,7 +40,7 @@ public class Database {
 
             // create a connection to the database
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort+"?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", strDbUser, strDbPassword);
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort+"/Tasks?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", strDbUser, strDbPassword);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -110,11 +110,12 @@ public class Database {
             stmt.setString(1,task.getLabel());
             stmt.setInt(2,0); //0 status is in progress
             stmt.execute();
-            int id = stmt.getGeneratedKeys().getInt(1);
+            int id = 1; //stmt.getGeneratedKeys().getInt(1);
             conn.commit();
             conn.setAutoCommit(true);
             return id;
         } catch(SQLException e) {
+            e.printStackTrace();
             return -1;
         }
     }
