@@ -101,9 +101,10 @@ public class Database {
      * @return
      */
     public int createTask(Task task) {
+        PreparedStatement stmt = null;
         try {
             conn.setAutoCommit(false); //Begin transaction
-            PreparedStatement stmt =
+            stmt =
                     conn.prepareStatement(
                             "INSERT INTO task (label,create_date,status) VALUES (?,NOW(),?);",
                             Statement.RETURN_GENERATED_KEYS);
@@ -122,9 +123,9 @@ public class Database {
             }
         } catch(SQLException e) {
             rollBack(e);
-            return -1;
         } finally {
-            resetToDefaultDB(null);
+            resetToDefaultDB(stmt);
+            return -1;
         }
     }
 
@@ -138,9 +139,10 @@ public class Database {
      * @return success code
      */
     public int cancelTask(int taskId) {
+        PreparedStatement stmt = null;
         try {
             conn.setAutoCommit(false); //Begin transaction
-            PreparedStatement stmt =
+            stmt =
                     conn.prepareStatement("UPDATE task SET status = ? WHERE id = ?;");
             stmt.setInt(1,2); // 2 status is canceled
             stmt.setInt(2,taskId);
@@ -149,6 +151,9 @@ public class Database {
             conn.setAutoCommit(true);
             return 1;
         } catch(SQLException e) {
+            rollBack(e);
+        } finally{
+            resetToDefaultDB(stmt);
             return -1;
         }
     }
@@ -163,8 +168,6 @@ public class Database {
      */
     public List<Task> getActiveTasks(String tag) {
         try {
-            conn.setAutoCommit(false); //Begin transaction
-
             PreparedStatement stmt;
 
             if(tag != null) {
@@ -175,8 +178,6 @@ public class Database {
                 stmt = conn.prepareStatement("SELECT * FROM task WHERE status = 0;");
             }
             ResultSet rs = stmt.executeQuery();
-            conn.commit();
-            conn.setAutoCommit(true);
             ArrayList<Task> tasks = new ArrayList();
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
@@ -196,12 +197,13 @@ public class Database {
      * Associates a given task with a given tag
      */
     public void tagTask(int taskId, List<String> tags) {
+        PreparedStatement stmt = null;
         try {
             conn.setAutoCommit(false); //Begin transaction
 
             for(String tag : tags) {
                 try {
-                    PreparedStatement stmt = conn.prepareStatement("INSERT INTO tag (name) VALUES (?);");
+                    stmt = conn.prepareStatement("INSERT INTO tag (name) VALUES (?);");
                     stmt.setString(1, tag);
                     stmt.execute();
                     stmt = conn.prepareStatement("INSERT INTO tagged_task (task_id,tag_name) VALUES (?,?);");
@@ -213,9 +215,10 @@ public class Database {
                 }
             }
             conn.commit();
-            conn.setAutoCommit(true);
         } catch(SQLException e) {
-
+            rollBack(e);
+        } finally{
+            resetToDefaultDB(stmt);
         }
     }
 
@@ -225,34 +228,40 @@ public class Database {
      * returns 1 if successful and -1 if not
      */
     public int setDueDate(int taskId, Date dueDate) {
+        PreparedStatement stmt = null;
         try {
             conn.setAutoCommit(false); //Begin transaction
-            PreparedStatement stmt =
+            stmt =
                     conn.prepareStatement("UPDATE task SET due_date = ? WHERE id = ?;");
             stmt.setDate(1,new java.sql.Date(dueDate.getTime())); // 2 status is canceled
             stmt.setInt(2,taskId);
             stmt.execute();
             conn.commit();
-            conn.setAutoCommit(true);
             return 1;
         } catch(SQLException e) {
+            rollBack(e);
             return -1;
+        } finally{
+            resetToDefaultDB(stmt);
         }
     }
 
     public int markTaskComplete(int taskId) {
+        PreparedStatement stmt = null;
         try {
             conn.setAutoCommit(false); //Begin transaction
-            PreparedStatement stmt =
+            stmt =
                     conn.prepareStatement("UPDATE task SET status = ? WHERE id = ?;");
             stmt.setInt(1,1); // 1 status is complete
             stmt.setInt(2,taskId);
             stmt.execute();
             conn.commit();
-            conn.setAutoCommit(true);
             return 1;
         } catch(SQLException e) {
+            rollBack(e);
             return -1;
+        } finally {
+            resetToDefaultDB(stmt);
         }
     }
 
@@ -267,8 +276,6 @@ public class Database {
      */
     public List<Task> getCompletedTasks(String tag) {
         try {
-            conn.setAutoCommit(false); //Begin transaction
-
             PreparedStatement stmt;
 
             if(tag != null) {
@@ -279,8 +286,6 @@ public class Database {
                 stmt = conn.prepareStatement("SELECT * FROM task WHERE status = 1;");
             }
             ResultSet rs = stmt.executeQuery();
-            conn.commit();
-            conn.setAutoCommit(true);
             ArrayList<Task> tasks = new ArrayList();
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
