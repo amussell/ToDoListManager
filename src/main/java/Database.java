@@ -110,10 +110,16 @@ public class Database {
             stmt.setString(1,task.getLabel());
             stmt.setInt(2,0); //0 status is in progress
             stmt.execute();
-            int id = 1; //stmt.getGeneratedKeys().getInt(1);
             conn.commit();
             conn.setAutoCommit(true);
-            return id;
+            ResultSet rs = stmt.getGeneratedKeys();
+
+            if(rs.next()) {
+                int id = rs.getInt(1);
+                return id;
+            } else {
+                return -1;
+            }
         } catch(SQLException e) {
             rollBack(e);
             return -1;
