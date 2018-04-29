@@ -64,8 +64,16 @@ public class Database {
         }
     }
 
-    public void createTask() {
-
+    /**
+     * Creates a new task in the database and returns the
+     * id of the task
+     *
+     * returns -1 if database query failed to create task
+     * @param task
+     * @return
+     */
+    public int createTask(Task task) {
+        return -1;
     }
 
     public void cancelTask() {

@@ -1,6 +1,7 @@
 public class ToDoListManager {
 
     public static void main(String[] args) {
+        String dbUrl = "";
         int userId;
         String password;
         int sandboxId;
@@ -18,7 +19,7 @@ public class ToDoListManager {
             System.exit(1);
         }
 
-        TaskManager tm = new TaskManager();
+        TaskManager tm = new TaskManager(dbUrl);
         tm.run();
 
     }

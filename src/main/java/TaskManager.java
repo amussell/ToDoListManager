@@ -2,6 +2,12 @@ import java.util.Scanner;
 
 public class TaskManager {
     String prompt = "TaskManager>";
+    Database db;
+
+    public TaskManager(String url) {
+        db = new Database(url);
+    }
+
     public void run() {
         Scanner in = new Scanner(System.in);
         while(true) { //Will stop when "exit" is entered and parseLine calls System.exit()
@@ -31,7 +37,14 @@ public class TaskManager {
     }
 
     private void add(String line) {
-        
+        Task task = new Task(line);
+        int taskId = db.createTask(task);
+        task.setId(taskId);
+        if(taskId == -1) {
+            System.out.println("Task could not be created");
+        } else {
+            System.out.println("Task id is: " + taskId);
+        }
     }
 
     private void listActive(String line) {
