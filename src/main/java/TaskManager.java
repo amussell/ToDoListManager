@@ -1,6 +1,3 @@
-
-import java.sql.Connection;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +55,7 @@ public class TaskManager {
     private void listActive(String line) {
         Scanner scan = new Scanner(line);
         String tag = null;
-        if(!scan.hasNext()) tag = scan.next();
+        if(scan.hasNext()) tag = scan.next();
         scan.close();
 
         List<Task> tasks;

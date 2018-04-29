@@ -115,15 +115,17 @@ public class Database {
             conn.setAutoCommit(true);
             return id;
         } catch(SQLException e) {
-            e.printStackTrace();
+            rollBack(e);
             return -1;
+        } finally {
+            resetToDefaultDB(stmt);
         }
     }
 
     /**
      * Cancels a task by setting its status in the database to 2.
      *
-     * Returns 1 if it succesfully canceled the task, and -1 if it
+     * Returns 1 if it successfully canceled the task, and -1 if it
      * does not successfully cancel the task
      *
      * @param taskId
@@ -359,7 +361,36 @@ public class Database {
         return null;
     }
 
+    /**
+     * Rolls back a transaction if an exception is caught.
+     * @param e
+     */
+    private void rollBack(Exception e){
+        e.printStackTrace();
+        if (conn != null) {
+            try {
+                System.err.print("Transaction is being rolled back");
+                conn.rollback();
+            } catch(SQLException e2) {
+                System.out.println("ERROR IN ROLLING BACK DB");
+                e.printStackTrace();
+            }
+        }
+    }
 
+    /**
+     * Resets the DB back to default
+     */
+    private void resetToDefaultDB(Statement stmt){
+        try{
+            if (stmt != null) {
+                stmt.close();
+            }
+            conn.setAutoCommit(true);
+        } catch (SQLException e) {
+            System.out.println("ERROR IN RESET TO DEFAULT DB");
+        }
 
+    }
 
 }

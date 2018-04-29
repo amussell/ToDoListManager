@@ -1,7 +1,6 @@
 public class ToDoListManager {
 
     public static void main(String[] args) {
-        String dbUrl = "";
         String sshId;
         String sshPassword;
         String sandboxId;
