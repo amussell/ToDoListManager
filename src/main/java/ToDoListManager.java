@@ -24,7 +24,6 @@ public class ToDoListManager {
 
         TaskManager tm = new TaskManager(credentials);
         tm.run();
-
     }
 
     public static void printUsage() {
