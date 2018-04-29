@@ -31,26 +31,6 @@ public class Database {
         }
     }
 
-    /**
-     * Creates all required tables with the proper schema for the database
-     *
-     * returns true if setup was successful, false if setup failed.
-     */
-    public boolean setUp() {
-        String createUsers = "CREATE TABLE task (id ;";
-        String createTimeStamp = "CREATE TABLE timeStamp (stamp integer, primary key (stamp));";
-        String insertFirstTimeStamp = "Insert into timeStamp values (0);";
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.execute(createUsers);
-            stmt.execute(createTimeStamp);
-            stmt.execute(insertFirstTimeStamp);
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     /**
      * Closes database handler
