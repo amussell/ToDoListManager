@@ -40,7 +40,7 @@ public class Database {
 
             // create a connection to the database
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort, strDbUser, strDbPassword);
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort+"/INTtech?useSSL=false", strDbUser, strDbPassword);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
