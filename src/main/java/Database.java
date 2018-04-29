@@ -40,7 +40,7 @@ public class Database {
 
             // create a connection to the database
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort+"/Tasks?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", strDbUser, strDbPassword);
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort+"/Tasks?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=false&useLegacyDatetimeCode=false&serverTimezone=MST", strDbUser, strDbPassword);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -123,9 +123,9 @@ public class Database {
             }
         } catch(SQLException e) {
             rollBack(e);
+            return -1;
         } finally {
             resetToDefaultDB(stmt);
-            return -1;
         }
     }
 
@@ -152,9 +152,9 @@ public class Database {
             return 1;
         } catch(SQLException e) {
             rollBack(e);
+            return -1;
         } finally{
             resetToDefaultDB(stmt);
-            return -1;
         }
     }
 
@@ -203,7 +203,7 @@ public class Database {
 
             for(String tag : tags) {
                 try {
-                    stmt = conn.prepareStatement("INSERT INTO tag (name) VALUES (?);");
+                    stmt = conn.prepareStatement("INSERT IGNORE INTO tag (name) VALUES (?);");
                     stmt.setString(1, tag);
                     stmt.execute();
                     stmt = conn.prepareStatement("INSERT INTO tagged_task (task_id,tag_name) VALUES (?,?);");
@@ -304,7 +304,7 @@ public class Database {
     public List<Task> getOverdueTasks() {
         PreparedStatement stmt = null;
         try {
-            stmt = conn.prepareStatement("SELECT * FROM task WHERE due_date < NOW();");
+            stmt = conn.prepareStatement("SELECT * FROM task WHERE due_date < NOW() AND status = 0;");
 
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList();
@@ -350,16 +350,46 @@ public class Database {
     }
 
     public List<Task> getTasksDueToday() {
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("SELECT * FROM task WHERE YEAR(due_date) = YEAR(NOW()) AND MONTH(due_date) = MONTH(NOW()) AND DAY(due_date) = DAY(NOW());");
 
-        return null;
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Task> tasks = new ArrayList();
+            while(rs.next()) {
+                Task task = new Task(rs.getString("label"));
+                task.setId(rs.getInt("id"));
+                task.setDueDate(rs.getDate("due_date"));
+                task.setCreateDate(rs.getDate("create_date"));
+                tasks.add(task);
+            }
+            return tasks;
+
+        } catch(SQLException e) {
+            return null;
+        }
     }
 
     /**
      * Renames a tasks label
      */
     public int renameTask(int taskId, String newLabel) {
-
-        return -1;
+        PreparedStatement stmt = null;
+        try {
+            conn.setAutoCommit(false); //Begin transaction
+            stmt =
+                    conn.prepareStatement("UPDATE task SET label = ? WHERE id = ?;");
+            stmt.setString(1,newLabel); // 1 status is complete
+            stmt.setInt(2,taskId);
+            stmt.execute();
+            conn.commit();
+            return 1;
+        } catch(SQLException e) {
+            rollBack(e);
+            return -1;
+        } finally {
+            resetToDefaultDB(stmt);
+        }
     }
 
     /**
@@ -370,8 +400,25 @@ public class Database {
      * @return list of tasks
      */
     public List<Task> search(String keyword) {
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("SELECT * FROM task WHERE label LIKE ? AND status = 0;");
+            stmt.setString(1,"%" + keyword + "%");
 
-        return null;
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Task> tasks = new ArrayList();
+            while(rs.next()) {
+                Task task = new Task(rs.getString("label"));
+                task.setId(rs.getInt("id"));
+                task.setDueDate(rs.getDate("due_date"));
+                task.setCreateDate(rs.getDate("create_date"));
+                tasks.add(task);
+            }
+            return tasks;
+
+        } catch(SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -383,8 +430,31 @@ public class Database {
      * @return
      */
     public Task lookupTask(int taskId) {
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("SELECT * FROM task WHERE id = ?;");
+            stmt.setInt(1,taskId);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()) {
+                Task task = new Task(rs.getString("label"));
+                task.setId(rs.getInt("id"));
+                task.setDueDate(rs.getDate("due_date"));
+                task.setCreateDate(rs.getDate("create_date"));
 
-        return null;
+                stmt = conn.prepareStatement("SELECT * FROM tagged_task WHERE task_id = ?;");
+                stmt.setInt(1,taskId);
+                rs = stmt.executeQuery();
+                while(rs.next()) {
+                    task.addTag(rs.getString("tag_name"));
+                } return task;
+            } else {
+                return null;
+            }
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

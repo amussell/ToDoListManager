@@ -34,7 +34,7 @@ public class TaskManager {
         if(command.equals("tag")) addTag(restOfLine);
         if(command.equals("finish")) finish(restOfLine);
         if(command.equals("cancel")) cancel(restOfLine);
-        if(command.equals("show")) show(scan.nextLine());
+        if(command.equals("show")) show(restOfLine);
         if(command.equals("completed")) showCompleted(restOfLine);
         if(command.equals("overdue")) showOverdue(restOfLine);
         if(command.equals("rename")) rename(restOfLine);
@@ -150,9 +150,10 @@ public class TaskManager {
 
     private void finish(String line) {
         int taskId = 0;
+        Scanner scan = new Scanner(line);
         String usage = "finish <task id>";
         try {
-            taskId = Integer.parseInt(line);
+            taskId = Integer.parseInt(scan.next());
             int successCode = db.markTaskComplete(taskId);
             if(successCode == -1) {
                 System.out.println("Could not mark task as finished");
@@ -167,8 +168,9 @@ public class TaskManager {
     private void cancel(String line) {
         int taskId = 0;
         String usage = "cancel <task id>";
+        Scanner scan = new Scanner(line);
         try {
-            taskId = Integer.parseInt(line);
+            taskId = Integer.parseInt(scan.next());
             int successCode = db.cancelTask(taskId);
             if(successCode == -1) {
                 System.out.println("Could not mark task as canceled");
@@ -183,8 +185,9 @@ public class TaskManager {
     private void show(String line) {
         int taskId = 0;
         String usage = "show <task id>";
+        Scanner scan = new Scanner(line);
         try {
-            taskId = Integer.parseInt(line);
+            taskId = Integer.parseInt(scan.next());
             Task task = db.lookupTask(taskId);
             if(task == null) {
                 System.out.println("No task with that id");

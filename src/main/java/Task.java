@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Task {
@@ -6,9 +7,15 @@ public class Task {
     private Date createDate;
     private Date dueDate;
     private int status; /*0: In Progress 1: Complete 2: Canceled*/
+    private ArrayList<String> tags;
 
     public Task(String label) {
         this.label = label;
+        tags = new ArrayList<>();
+    }
+
+    public void addTag(String tag) {
+        tags.add(tag);
     }
 
     public Date getCreateDate() {
@@ -52,6 +59,17 @@ public class Task {
     }
 
     public String toString() {
-        return id + " " + label + " " + dueDate + " " + createDate;
+        String dueDateString = "";
+        String tagsString = "";
+        if(dueDate != null) {
+            dueDateString = dueDate.toString();
+        }
+        if(this.tags.size() > 0) {
+            tagsString = "Tags: ";
+            for(String tag : tags) {
+                tagsString += tag + " ";
+            }
+        }
+        return id + " " + label + " " + dueDateString + " " + createDate + " " + tagsString;
     }
 }
