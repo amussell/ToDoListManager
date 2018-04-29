@@ -77,8 +77,8 @@ public class Database {
         return -1;
     }
 
-    public void cancelTask() {
-
+    public int cancelTask(int taskId) {
+        return -1;
     }
 
     /**
@@ -111,11 +111,21 @@ public class Database {
         return -1;
     }
 
-    public void markTaskComplete() {
+    public int markTaskComplete(int taskId) {
 
+        return -1;
     }
 
-    public List<Task> getCompletedTasks() {
+    /**
+     * Returns a list os completed tasks with a given tag
+     *
+     * If the given tag is null a list of all completed tasks
+     * is returned
+     *
+     * @param tag
+     * @return list of completed tasks
+     */
+    public List<Task> getCompletedTasks(String tag) {
 
         return null;
     }
@@ -143,8 +153,34 @@ public class Database {
     /**
      * Renames a tasks label
      */
-    public void renameTask() {
+    public int renameTask(int taskId, String newLabel) {
 
+        return -1;
+    }
+
+    /**
+     * Returns a list of all tasks with labels that
+     * contain the keyword given.
+     *
+     * @param keyword
+     * @return list of tasks
+     */
+    public List<Task> search(String keyword) {
+
+        return null;
+    }
+
+    /**
+     * Looks up a task and returns a task object
+     *
+     * returns null if there is no task with the
+     * specified task id.
+     * @param taskId
+     * @return
+     */
+    public Task lookupTask(int taskId) {
+
+        return null;
     }
 
 
