@@ -141,7 +141,27 @@ public class Database {
      * Associates a given task with a given tag
      */
     public void tagTask(int taskId, List<String> tags) {
+        try {
+            conn.setAutoCommit(false); //Begin transaction
 
+            for(String tag : tags) {
+                try {
+                    PreparedStatement stmt = conn.prepareStatement("INSERT INTO tag (name) VALUES (?);");
+                    stmt.setString(1, tag);
+                    stmt.execute();
+                    stmt = conn.prepareStatement("INSERT INTO tagged_task (task_id,tag_name) VALUES (?,?);");
+                    stmt.setInt(1, taskId);
+                    stmt.setString(2,tag);
+                    stmt.execute();
+                } catch (SQLException e) {
+                    /*The tag must have already existed*/
+                }
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+        } catch(SQLException e) {
+
+        }
     }
 
     /**
@@ -150,13 +170,35 @@ public class Database {
      * returns 1 if successful and -1 if not
      */
     public int setDueDate(int taskId, Date dueDate) {
-
-        return -1;
+        try {
+            conn.setAutoCommit(false); //Begin transaction
+            PreparedStatement stmt =
+                    conn.prepareStatement("UPDATE task SET due_date = ? WHERE id = ?;");
+            stmt.setDate(1,new java.sql.Date(dueDate.getTime())); // 2 status is canceled
+            stmt.setInt(2,taskId);
+            stmt.execute();
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch(SQLException e) {
+            return -1;
+        }
     }
 
     public int markTaskComplete(int taskId) {
-
-        return -1;
+        try {
+            conn.setAutoCommit(false); //Begin transaction
+            PreparedStatement stmt =
+                    conn.prepareStatement("UPDATE task SET status = ? WHERE id = ?;");
+            stmt.setInt(1,1); // 1 status is complete
+            stmt.setInt(2,taskId);
+            stmt.execute();
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch(SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -169,13 +211,58 @@ public class Database {
      * @return list of completed tasks
      */
     public List<Task> getCompletedTasks(String tag) {
+        try {
+            conn.setAutoCommit(false); //Begin transaction
 
-        return null;
+            PreparedStatement stmt;
+
+            if(tag != null) {
+                stmt = conn.prepareStatement("SELECT * FROM task JOIN tagged_task ON id = task_id " +
+                        "WHERE name = ? AND status = 1;");
+                stmt.setString(1,tag);
+            } else {
+                stmt = conn.prepareStatement("SELECT * FROM task WHERE status = 1;");
+            }
+            ResultSet rs = stmt.executeQuery();
+            conn.commit();
+            conn.setAutoCommit(true);
+            ArrayList<Task> tasks = new ArrayList();
+            while(rs.next()) {
+                Task task = new Task(rs.getString("label"));
+                task.setId(rs.getInt("id"));
+                task.setDueDate(rs.getDate("due_date"));
+                task.setCreateDate(rs.getDate("create_date"));
+                tasks.add(task);
+            }
+            return tasks;
+
+        } catch(SQLException e) {
+            return null;
+        }
     }
 
     public List<Task> getOverdueTasks() {
+        try {
+            conn.setAutoCommit(false); //Begin transaction
 
-        return null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM task WHERE due_date < NOW();");
+
+            ResultSet rs = stmt.executeQuery();
+            conn.commit();
+            conn.setAutoCommit(true);
+            ArrayList<Task> tasks = new ArrayList();
+            while(rs.next()) {
+                Task task = new Task(rs.getString("label"));
+                task.setId(rs.getInt("id"));
+                task.setDueDate(rs.getDate("due_date"));
+                task.setCreateDate(rs.getDate("create_date"));
+                tasks.add(task);
+            }
+            return tasks;
+
+        } catch(SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -184,7 +271,6 @@ public class Database {
      * @return tasks that are due soon
      */
     public List<Task> getTasksDueSoon() {
-
         return null;
     }
 
