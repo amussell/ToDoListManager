@@ -52,6 +52,6 @@ public class Task {
     }
 
     public String toString() {
-        return "Task to string not implemented";
+        return id + " " + label + " " + dueDate + " " + createDate;
     }
 }

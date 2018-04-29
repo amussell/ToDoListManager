@@ -30,17 +30,18 @@ public class TaskManager {
         Scanner scan = new Scanner(line);
         if(!scan.hasNext()) return; //Nothing to do
         String command = scan.next();
-        if(command.equals("add")) add(scan.nextLine());
-        if(command.equals("active")) listActive(scan.nextLine());
-        if(command.equals("due")) due(scan.nextLine());
-        if(command.equals("tag")) addTag(scan.nextLine());
-        if(command.equals("finish")) finish(scan.nextLine());
-        if(command.equals("cancel")) cancel(scan.nextLine());
+        String restOfLine = scan.hasNext() ? scan.nextLine() : "";
+        if(command.equals("add")) add(restOfLine);
+        if(command.equals("active")) listActive(restOfLine);
+        if(command.equals("due")) due(restOfLine);
+        if(command.equals("tag")) addTag(restOfLine);
+        if(command.equals("finish")) finish(restOfLine);
+        if(command.equals("cancel")) cancel(restOfLine);
         if(command.equals("show")) show(scan.nextLine());
-        if(command.equals("completed")) showCompleted(scan.nextLine());
-        if(command.equals("overdue")) showOverdue(scan.nextLine());
-        if(command.equals("rename")) rename(scan.nextLine());
-        if(command.equals("search")) search(scan.nextLine());
+        if(command.equals("completed")) showCompleted(restOfLine);
+        if(command.equals("overdue")) showOverdue(restOfLine);
+        if(command.equals("rename")) rename(restOfLine);
+        if(command.equals("search")) search(restOfLine);
         if(command.equals("exit")) running = false;
     }
 
@@ -58,7 +59,7 @@ public class TaskManager {
     private void listActive(String line) {
         Scanner scan = new Scanner(line);
         String tag = null;
-        if(!scan.hasNext()) tag = scan.next();
+        if(scan.hasNext()) tag = scan.next();
         scan.close();
 
         List<Task> tasks;
@@ -75,7 +76,7 @@ public class TaskManager {
 
     private void due(String line) {
         Scanner scan = new Scanner(line);
-        String usage = "Usage: due <date>\ndue today\ndue soon";
+        String usage = "Usage: due <task id> <date MM/dd/yyyy>\ndue today\ndue soon";
         try {
             String next = scan.next();
             if(next.equals("today")) {
@@ -85,13 +86,14 @@ public class TaskManager {
             } else {
                 int taskId = 0;
                 Date dueDate = null;
-                SimpleDateFormat df = new SimpleDateFormat();
-                taskId = Integer.parseInt(scan.next());
-                dueDate = df.parse(next);
+                SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+                taskId = Integer.parseInt(next);
+                dueDate = df.parse(scan.next());
                 setDue(taskId,dueDate);
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println(usage);
         }
         scan.close();
