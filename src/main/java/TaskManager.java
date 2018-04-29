@@ -29,12 +29,12 @@ public class TaskManager {
         String command = scan.next();
         if(command.equals("add")) add(scan.nextLine());
         if(command.equals("active")) listActive(scan.nextLine());
-        if(command.equals("due")) setDue(scan.nextLine());
+        if(command.equals("due")) due(scan.nextLine());
         if(command.equals("tag")) addTag(scan.nextLine());
         if(command.equals("finish")) finish(scan.nextLine());
         if(command.equals("cancel")) cancel(scan.nextLine());
         if(command.equals("show")) show(scan.nextLine());
-        if(command.equals("completed")) complete(scan.nextLine());
+        if(command.equals("completed")) showCompleted(scan.nextLine());
         if(command.equals("overdue")) showOverdue(scan.nextLine());
         if(command.equals("rename")) rename(scan.nextLine());
         if(command.equals("search")) search(scan.nextLine());
@@ -70,25 +70,58 @@ public class TaskManager {
         }
     }
 
-    private void setDue(String line) {
+    private void due(String line) {
         Scanner scan = new Scanner(line);
-        int taskId = 0;
-        Date dueDate = null;
+        String usage = "Usage: due <date>\ndue today\ndue soon";
         try {
-            SimpleDateFormat df = new SimpleDateFormat();
-            taskId = Integer.parseInt(scan.next());
-            dueDate = df.parse(scan.next());
+            String next = scan.next();
+            if(next.equals("today")) {
+                dueToday();
+            } else if (next.equals("soon")) {
+                dueSoon();
+            } else {
+                int taskId = 0;
+                Date dueDate = null;
+                SimpleDateFormat df = new SimpleDateFormat();
+                taskId = Integer.parseInt(scan.next());
+                dueDate = df.parse(next);
+                setDue(taskId,dueDate);
+            }
+
         } catch (Exception e) {
-            e.printStackTrace(); //DELETE AND ADD USAGE STATEMENT
-            return;
+            System.out.println(usage);
         }
         scan.close();
+    }
 
-        int successCode = db.setDueDate(taskId,dueDate);
+    private void dueToday() {
+        List<Task> tasksDueToday = db.getTasksDueToday();
+        if(tasksDueToday.size() == 0) {
+            System.out.println("There are no tasks due today");
+        } else {
+            for (Task task : tasksDueToday) {
+                System.out.println(task);
+            }
+        }
+    }
+
+    private void dueSoon() {
+        List<Task> tasksDueSoon = db.getTasksDueSoon();
+        if(tasksDueSoon.size() == 0) {
+            System.out.println("There are no tasks due soon");
+        } else {
+            for (Task task : tasksDueSoon) {
+                System.out.println(task);
+            }
+        }
+    }
+
+    private void setDue(int taskId, Date date) {
+        int successCode = db.setDueDate(taskId,date);
         if(successCode == -1) {
             System.out.println("Failed to set due date");
         } else {
-            System.out.println("Set due date for task " + taskId + " to " + dueDate);
+            System.out.println("Set due date for task " + taskId + " to " + date);
         }
     }
 
@@ -118,33 +151,111 @@ public class TaskManager {
         String usage = "finish <task id>";
         try {
             taskId = Integer.parseInt(line);
-
+            int successCode = db.markTaskComplete(taskId);
+            if(successCode == -1) {
+                System.out.println("Could not mark task as finished");
+            } else {
+                System.out.println("Task " + taskId + " marked as finished");
+            }
         } catch (Exception e) {
             System.out.println(usage);
         }
     }
 
     private void cancel(String line) {
-
+        int taskId = 0;
+        String usage = "cancel <task id>";
+        try {
+            taskId = Integer.parseInt(line);
+            int successCode = db.cancelTask(taskId);
+            if(successCode == -1) {
+                System.out.println("Could not mark task as canceled");
+            } else {
+                System.out.println("Task " + taskId + " marked as canceled");
+            }
+        } catch (Exception e) {
+            System.out.println(usage);
+        }
     }
 
     private void show(String line) {
-
+        int taskId = 0;
+        String usage = "show <task id>";
+        try {
+            taskId = Integer.parseInt(line);
+            Task task = db.lookupTask(taskId);
+            if(task == null) {
+                System.out.println("No task with that id");
+            } else {
+                System.out.println(task.toString());
+            }
+        } catch (Exception e) {
+            System.out.println(usage);
+        }
     }
 
-    private void complete(String line) {
-
+    private void showCompleted(String line) {
+        Scanner scan = new Scanner(line);
+        String usage = "completed <tag>";
+        String tag = null;
+        if(scan.hasNext()) tag = scan.next();
+        List<Task> completedTasks = db.getCompletedTasks(tag);
+        if(completedTasks.size() == 0) {
+            System.out.println("No completed tasks with that tag");
+        } else {
+            for(Task task : completedTasks) {
+                System.out.println(task);
+            }
+        }
     }
 
     private void showOverdue(String line) {
-
+        List<Task> overdueTasks = db.getOverdueTasks();
+        if(overdueTasks.size() == 0) {
+            System.out.println("No overdue tasks");
+        } else {
+            for (Task task : overdueTasks) {
+                System.out.println(task);
+            }
+        }
     }
 
     private void rename(String line) {
+        Scanner scan = new Scanner(line);
+        String usage = "rename <task id> <new label>";
+        try {
+            int taskId = Integer.parseInt(scan.next());
+            String newLabel = scan.nextLine().trim();
+            if(newLabel.length() == 0) {
+                System.out.println(usage);
+                return;
+            }
+            int successCode = db.renameTask(taskId,newLabel);
+            if(successCode == -1) {
+                System.out.println("Could not rename task");
+            } else {
+                System.out.println("Renamed task to " + newLabel);
+            }
 
+        } catch(Exception e) {
+            System.out.println(usage);
+        }
     }
 
     private void search(String line) {
-
+        String usage = "search <keyword>";
+        String keyword = line.trim();
+        if(keyword.length() == 0) {
+            System.out.println(usage);
+            return;
+        }
+        List<Task> tasks = db.search(keyword);
+        if(tasks.size() == 0) {
+            System.out.println("No results");
+            return;
+        }
+        for(Task task: tasks) {
+            System.out.println(task);
+        }
     }
 }
