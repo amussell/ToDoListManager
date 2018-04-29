@@ -124,7 +124,7 @@ public class Database {
             rollBack(e);
             return -1;
         } finally {
-            resetToDefaultDB(stmt);
+            resetToDefaultDB(null);
         }
     }
 
@@ -297,14 +297,11 @@ public class Database {
     }
 
     public List<Task> getOverdueTasks() {
+        PreparedStatement stmt = null;
         try {
-            conn.setAutoCommit(false); //Begin transaction
-
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM task WHERE due_date < NOW();");
+            stmt = conn.prepareStatement("SELECT * FROM task WHERE due_date < NOW();");
 
             ResultSet rs = stmt.executeQuery();
-            conn.commit();
-            conn.setAutoCommit(true);
             ArrayList<Task> tasks = new ArrayList();
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
@@ -318,6 +315,7 @@ public class Database {
         } catch(SQLException e) {
             return null;
         }
+
     }
 
     /**
@@ -326,7 +324,24 @@ public class Database {
      * @return tasks that are due soon
      */
     public List<Task> getTasksDueSoon() {
-        return null;
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("SELECT * FROM task WHERE due_date < DATE_ADD(NOW(), INTERVAL 3 DAY);");
+
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Task> tasks = new ArrayList();
+            while(rs.next()) {
+                Task task = new Task(rs.getString("label"));
+                task.setId(rs.getInt("id"));
+                task.setDueDate(rs.getDate("due_date"));
+                task.setCreateDate(rs.getDate("create_date"));
+                tasks.add(task);
+            }
+            return tasks;
+
+        } catch(SQLException e) {
+            return null;
+        }
     }
 
     public List<Task> getTasksDueToday() {
