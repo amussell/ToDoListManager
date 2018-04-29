@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Date;
 import java.util.List;
 
 
@@ -80,7 +81,15 @@ public class Database {
 
     }
 
-    public List<Task> getActiveTasks() {
+    /**
+     * Gets a list of active tasks associated with the specified
+     * tag. If no tag is specified (null) then it returns a list
+     * of all active tasks
+     *
+     * @param tag
+     * @return list of tasks
+     */
+    public List<Task> getActiveTasks(String tag) {
 
         return null;
     }
@@ -88,15 +97,18 @@ public class Database {
     /**
      * Associates a given task with a given tag
      */
-    public void tagTask() {
+    public void tagTask(int taskId, List<String> tags) {
 
     }
 
     /**
      * Sets the due date for a task with a given task id.
+     *
+     * returns 1 if successful and -1 if not
      */
-    public void setDueDate() {
+    public int setDueDate(int taskId, Date dueDate) {
 
+        return -1;
     }
 
     public void markTaskComplete() {

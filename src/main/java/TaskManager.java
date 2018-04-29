@@ -1,3 +1,8 @@
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class TaskManager {
@@ -48,19 +53,75 @@ public class TaskManager {
     }
 
     private void listActive(String line) {
+        Scanner scan = new Scanner(line);
+        String tag = null;
+        if(!scan.hasNext()) tag = scan.next();
+        scan.close();
 
+        List<Task> tasks;
+        tasks = db.getActiveTasks(tag);
+
+        if(tasks.size() == 0) {
+            System.out.println("No active tasks");
+        } else {
+            for (Task task : tasks) {
+                System.out.println(task);
+            }
+        }
     }
 
     private void setDue(String line) {
+        Scanner scan = new Scanner(line);
+        int taskId = 0;
+        Date dueDate = null;
+        try {
+            SimpleDateFormat df = new SimpleDateFormat();
+            taskId = Integer.parseInt(scan.next());
+            dueDate = df.parse(scan.next());
+        } catch (Exception e) {
+            e.printStackTrace(); //DELETE AND ADD USAGE STATEMENT
+            return;
+        }
+        scan.close();
 
+        int successCode = db.setDueDate(taskId,dueDate);
+        if(successCode == -1) {
+            System.out.println("Failed to set due date");
+        } else {
+            System.out.println("Set due date for task " + taskId + " to " + dueDate);
+        }
     }
 
     private void addTag(String line) {
-
+        Scanner scan = new Scanner(line);
+        String usage = "Usage: tag <taskId> tags...";
+        int taskId;
+        ArrayList<String> tags = new ArrayList();
+        try {
+            taskId = Integer.parseInt(scan.next());
+            while(scan.hasNext()) {
+                tags.add(scan.next());
+            }
+            if(tags.size() == 0) {
+                System.out.println(usage);
+                return;
+            } else {
+                db.tagTask(taskId,tags);
+            }
+        } catch(Exception e) {
+            System.out.println(usage);
+        }
     }
 
     private void finish(String line) {
+        int taskId = 0;
+        String usage = "finish <task id>";
+        try {
+            taskId = Integer.parseInt(line);
 
+        } catch (Exception e) {
+            System.out.println(usage);
+        }
     }
 
     private void cancel(String line) {
