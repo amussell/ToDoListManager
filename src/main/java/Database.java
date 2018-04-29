@@ -1,5 +1,6 @@
 import java.sql.*;
 import com.jcraft.jsch.*; //SSH connection
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -76,26 +77,6 @@ public class Database {
         return session;
     }
 
-    /**
-     * Creates all required tables with the proper schema for the database
-     *
-     * returns true if setup was successful, false if setup failed.
-     */
-    public boolean setUp() {
-        String createUsers = "CREATE TABLE task (id ;";
-        String createTimeStamp = "CREATE TABLE timeStamp (stamp integer, primary key (stamp));";
-        String insertFirstTimeStamp = "Insert into timeStamp values (0);";
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.execute(createUsers);
-            stmt.execute(createTimeStamp);
-            stmt.execute(insertFirstTimeStamp);
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     /**
      * Closes database handler
@@ -119,11 +100,47 @@ public class Database {
      * @return
      */
     public int createTask(Task task) {
-        return -1;
+        try {
+            conn.setAutoCommit(false); //Begin transaction
+            PreparedStatement stmt =
+                    conn.prepareStatement(
+                            "INSERT INTO task (label,create_date,status) VALUES (?,NOW(),?);",
+                            Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1,task.getLabel());
+            stmt.setInt(2,0); //0 status is in progress
+            stmt.execute();
+            int id = stmt.getGeneratedKeys().getInt(1);
+            conn.commit();
+            conn.setAutoCommit(true);
+            return id;
+        } catch(SQLException e) {
+            return -1;
+        }
     }
 
+    /**
+     * Cancels a task by setting its status in the database to 2.
+     *
+     * Returns 1 if it succesfully canceled the task, and -1 if it
+     * does not successfully cancel the task
+     *
+     * @param taskId
+     * @return success code
+     */
     public int cancelTask(int taskId) {
-        return -1;
+        try {
+            conn.setAutoCommit(false); //Begin transaction
+            PreparedStatement stmt =
+                    conn.prepareStatement("UPDATE task SET status = ? WHERE id = ?;");
+            stmt.setInt(1,2); // 2 status is canceled
+            stmt.setInt(2,taskId);
+            stmt.execute();
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch(SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -135,8 +152,34 @@ public class Database {
      * @return list of tasks
      */
     public List<Task> getActiveTasks(String tag) {
+        try {
+            conn.setAutoCommit(false); //Begin transaction
 
-        return null;
+            PreparedStatement stmt;
+
+            if(tag != null) {
+                stmt = conn.prepareStatement("SELECT * FROM task JOIN tagged_task ON id = task_id " +
+                                "WHERE name = ? AND status = 0;");
+                stmt.setString(1,tag);
+            } else {
+                stmt = conn.prepareStatement("SELECT * FROM task WHERE status = 0;");
+            }
+            ResultSet rs = stmt.executeQuery();
+            conn.commit();
+            conn.setAutoCommit(true);
+            ArrayList<Task> tasks = new ArrayList();
+            while(rs.next()) {
+                Task task = new Task(rs.getString("label"));
+                task.setId(rs.getInt("id"));
+                task.setDueDate(rs.getDate("due_date"));
+                task.setCreateDate(rs.getDate("create_date"));
+                tasks.add(task);
+            }
+            return tasks;
+
+        } catch(SQLException e) {
+            return null;
+        }
     }
 
     /**

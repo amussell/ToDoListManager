@@ -8,6 +8,8 @@ CREATE TABLE task (id INT AUTO_INCREMENT,
 CREATE TABLE tag (name VARCHAR(25),
                     PRIMARY KEY (name) );
 
-CREATE TABLE task_tag (task_id FOREIGN KEY,
-                        tag_name FOREIGN KEY
+CREATE TABLE tagged_task (task_id,
+                        tag_name,
+                        FOREIGN KEY (task_id) REFERENCES task(id),
+                        FOREIGN KEY (tag_name) REFERENCES tag(name),
                         PRIMARY KEY (task_id, tag_name));
