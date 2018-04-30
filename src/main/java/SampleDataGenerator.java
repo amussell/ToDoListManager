@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class SampleDataGenerator {
     public static void main(String[] args) {
-        tags();
+        tasks();
 
     }
     private static void tags() {
