@@ -70,6 +70,6 @@ public class Task {
                 tagsString += tag + " ";
             }
         }
-        return id + " " + label + " " + dueDateString + " " + createDate + " " + tagsString;
+        return "ID: "+id + " " + "Label: "+label + " " + "DUE: "+dueDateString + " " + "CREATED: "+createDate + " " + "TAG: "+tagsString;
     }
 }

@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * A class used to interact with the DataBase and keep an
+ * interactive shell session running while the program is in use
+ */
 public class TaskManager {
     String prompt = "TaskManager>";
     Database db;
@@ -13,6 +17,10 @@ public class TaskManager {
         db = new Database(credentials);
     }
 
+    /**
+     * Stays in a loop taking user input to
+     * process database transactions
+     */
     public void run() {
         Scanner in = new Scanner(System.in);
         while(running) { //Will stop when "exit" is entered
@@ -23,6 +31,10 @@ public class TaskManager {
         db.close();
     }
 
+    /**
+     *
+     * @param line
+     */
     private void parseLine(String line) {
         Scanner scan = new Scanner(line);
         if(!scan.hasNext()) return; //Nothing to do
