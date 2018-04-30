@@ -19,7 +19,6 @@ public class ToDoListManager {
             dbPort = Integer.parseInt(args[4]);
 
             credentials = new Credentials(sshId, sshPassword, sandboxId, sandboxPassword, dbPort);
-            Database db = new Database(credentials);
 
         } catch(Exception e) {
             e.printStackTrace();
