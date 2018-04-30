@@ -280,7 +280,7 @@ public class Database {
 
             if(tag != null) {
                 stmt = conn.prepareStatement("SELECT * FROM task JOIN tagged_task ON id = task_id " +
-                        "WHERE name = ? AND status = 1;");
+                        "WHERE tag_name = ? AND status = 1;");
                 stmt.setString(1,tag);
             } else {
                 stmt = conn.prepareStatement("SELECT * FROM task WHERE status = 1;");
@@ -297,6 +297,7 @@ public class Database {
             return tasks;
 
         } catch(SQLException e) {
+            e.printStackTrace();
             return null;
         }
     }

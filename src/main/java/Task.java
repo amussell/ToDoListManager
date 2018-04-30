@@ -62,7 +62,7 @@ public class Task {
         String dueDateString = "";
         String tagsString = "";
         if(dueDate != null) {
-            dueDateString = dueDate.toString();
+            dueDateString = "Due: " + dueDate.toString();
         }
         if(this.tags.size() > 0) {
             tagsString = "Tags: ";
@@ -70,6 +70,6 @@ public class Task {
                 tagsString += tag + " ";
             }
         }
-        return "ID: "+id + " " + "Label: "+label + " " + "DUE: "+dueDateString + " " + "CREATED: "+createDate + " " + "TAG: "+tagsString;
+        return "ID: "+id + " " + "Label: "+label + " " + dueDateString + " " + "CREATED: "+createDate + " " + tagsString;
     }
 }
