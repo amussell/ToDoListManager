@@ -360,7 +360,7 @@ public class Database {
     public List<Task> getTasksDueToday() {
         PreparedStatement stmt = null;
         try {
-            stmt = conn.prepareStatement("SELECT * FROM task WHERE YEAR(due_date) = YEAR(NOW()) AND MONTH(due_date) = MONTH(NOW()) AND DAY(due_date) = DAY(NOW());");
+            stmt = conn.prepareStatement("SELECT * FROM task WHERE YEAR(due_date) = YEAR(NOW()) AND MONTH(due_date) = MONTH(NOW()) AND DAY(due_date) = DAY(NOW()) and status = 0;");
 
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList();
@@ -410,7 +410,7 @@ public class Database {
     public List<Task> search(String keyword) {
         PreparedStatement stmt = null;
         try {
-            stmt = conn.prepareStatement("SELECT * FROM task WHERE label LIKE ? AND status = 0;");
+            stmt = conn.prepareStatement("SELECT * FROM task WHERE label LIKE ?;");
             stmt.setString(1,"%" + keyword + "%");
 
             ResultSet rs = stmt.executeQuery();
