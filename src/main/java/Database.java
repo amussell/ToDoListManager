@@ -6,7 +6,7 @@ import java.util.List;
 
 
 /**
- *Sqlite database Class
+ *Database Class
  */
 public class Database {
 
@@ -140,15 +140,20 @@ public class Database {
      */
     public int cancelTask(int taskId) {
         PreparedStatement stmt = null;
+        PreparedStatement stmt2 = null;
         try {
             conn.setAutoCommit(false); //Begin transaction
             stmt =
-                    conn.prepareStatement("UPDATE task SET status = ? WHERE id = ?;");
-            stmt.setInt(1,2); // 2 status is canceled
-            stmt.setInt(2,taskId);
+                    conn.prepareStatement("DELETE FROM tagged_task WHERE task_id = ?;");
+            stmt2 =
+                    conn.prepareStatement("DELETE FROM task WHERE id = ?;");
+            stmt.setInt(1,taskId);
+            stmt2.setInt(1,taskId);
             stmt.execute();
+            int rowsDeleted = stmt2.executeUpdate();
             conn.commit();
             conn.setAutoCommit(true);
+            if(rowsDeleted == 0) return -1;
             return 1;
         } catch(SQLException e) {
             rollBack(e);
@@ -172,7 +177,7 @@ public class Database {
 
             if(tag != null) {
                 stmt = conn.prepareStatement("SELECT * FROM task JOIN tagged_task ON id = task_id " +
-                                "WHERE name = ? AND status = 0;");
+                                "WHERE tag_name = ? AND status = 0;");
                 stmt.setString(1,tag);
             } else {
                 stmt = conn.prepareStatement("SELECT * FROM task WHERE status = 0;");
@@ -254,8 +259,9 @@ public class Database {
                     conn.prepareStatement("UPDATE task SET status = ? WHERE id = ?;");
             stmt.setInt(1,1); // 1 status is complete
             stmt.setInt(2,taskId);
-            stmt.execute();
+            int numUpdatedRows = stmt.executeUpdate();
             conn.commit();
+            if(numUpdatedRows == 0) return -1;
             return 1;
         } catch(SQLException e) {
             rollBack(e);
@@ -332,7 +338,8 @@ public class Database {
     public List<Task> getTasksDueSoon() {
         PreparedStatement stmt = null;
         try {
-            stmt = conn.prepareStatement("SELECT * FROM task WHERE due_date < DATE_ADD(NOW(), INTERVAL 3 DAY);");
+            stmt = conn.prepareStatement("SELECT * FROM task " +
+                                             "WHERE due_date < DATE_ADD(NOW(), INTERVAL 3 DAY) AND status = 0;");
 
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList();

@@ -41,17 +41,18 @@ public class TaskManager {
         String command = scan.next();
         String restOfLine = scan.hasNext() ? scan.nextLine() : "";
         if(command.equals("add")) add(restOfLine);
-        if(command.equals("active")) listActive(restOfLine);
-        if(command.equals("due")) due(restOfLine);
-        if(command.equals("tag")) addTag(restOfLine);
-        if(command.equals("finish")) finish(restOfLine);
-        if(command.equals("cancel")) cancel(restOfLine);
-        if(command.equals("show")) show(restOfLine);
-        if(command.equals("completed")) showCompleted(restOfLine);
-        if(command.equals("overdue")) showOverdue(restOfLine);
-        if(command.equals("rename")) rename(restOfLine);
-        if(command.equals("search")) search(restOfLine);
-        if(command.equals("exit")) running = false;
+        else if(command.equals("active")) listActive(restOfLine);
+        else if(command.equals("due")) due(restOfLine);
+        else if(command.equals("tag")) addTag(restOfLine);
+        else if(command.equals("finish")) finish(restOfLine);
+        else if(command.equals("cancel")) cancel(restOfLine);
+        else if(command.equals("show")) show(restOfLine);
+        else if(command.equals("completed")) showCompleted(restOfLine);
+        else if(command.equals("overdue")) showOverdue(restOfLine);
+        else if(command.equals("rename")) rename(restOfLine);
+        else if(command.equals("search")) search(restOfLine);
+        else if(command.equals("exit")) running = false;
+        else printUsage();
     }
 
     private void add(String line) {
@@ -63,6 +64,13 @@ public class TaskManager {
         } else {
             System.out.println("Task id is: " + taskId);
         }
+    }
+
+    /**
+     * Prints a usage message
+     */
+    public void printUsage(){
+        System.out.println("Invalid command. Read the instructions.");
     }
 
     private void listActive(String line) {
