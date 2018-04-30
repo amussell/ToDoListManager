@@ -1,5 +1,7 @@
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Task {
     private String label;
@@ -62,7 +64,9 @@ public class Task {
         String dueDateString = "";
         String tagsString = "";
         if(dueDate != null) {
-            dueDateString = "Due: " + dueDate.toString();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            df.setTimeZone(TimeZone.getTimeZone("MST"));
+            dueDateString = "Due: " + df.format(dueDate);
         }
         if(this.tags.size() > 0) {
             tagsString = "Tags: ";

@@ -1,8 +1,8 @@
 import java.sql.*;
 import com.jcraft.jsch.*; //SSH connection
-import java.util.ArrayList;
+
+import java.util.*;
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -40,7 +40,7 @@ public class Database {
 
             // create a connection to the database
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort+"/Tasks?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=false&useLegacyDatetimeCode=false&serverTimezone=MST", strDbUser, strDbPassword);
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:"+nLocalPort+"/Tasks?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=false&useLegacyDatetimeCode=false&serverTimezone=UTC", strDbUser, strDbPassword);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -182,8 +182,8 @@ public class Database {
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
                 task.setId(rs.getInt("id"));
-                task.setDueDate(rs.getDate("due_date"));
-                task.setCreateDate(rs.getDate("create_date"));
+                task.setDueDate(rs.getDate("due_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
+                task.setCreateDate(rs.getDate("create_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
                 tasks.add(task);
             }
             return tasks;
@@ -290,8 +290,8 @@ public class Database {
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
                 task.setId(rs.getInt("id"));
-                task.setDueDate(new Date(rs.getDate("due_date").getTime()));
-                task.setCreateDate(rs.getDate("create_date"));
+                task.setDueDate(new Date(rs.getDate("due_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))).getTime()));
+                task.setCreateDate(rs.getDate("create_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
                 tasks.add(task);
             }
             return tasks;
@@ -312,8 +312,8 @@ public class Database {
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
                 task.setId(rs.getInt("id"));
-                task.setDueDate(rs.getDate("due_date"));
-                task.setCreateDate(rs.getDate("create_date"));
+                task.setDueDate(rs.getDate("due_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
+                task.setCreateDate(rs.getDate("create_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
                 tasks.add(task);
             }
             return tasks;
@@ -339,8 +339,8 @@ public class Database {
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
                 task.setId(rs.getInt("id"));
-                task.setDueDate(rs.getDate("due_date"));
-                task.setCreateDate(rs.getDate("create_date"));
+                task.setDueDate(rs.getDate("due_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
+                task.setCreateDate(rs.getDate("create_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
                 tasks.add(task);
             }
             return tasks;
@@ -360,8 +360,8 @@ public class Database {
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
                 task.setId(rs.getInt("id"));
-                task.setDueDate(rs.getDate("due_date"));
-                task.setCreateDate(rs.getDate("create_date"));
+                task.setDueDate(rs.getDate("due_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
+                task.setCreateDate(rs.getDate("create_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
                 tasks.add(task);
             }
             return tasks;
@@ -411,8 +411,8 @@ public class Database {
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
                 task.setId(rs.getInt("id"));
-                task.setDueDate(rs.getDate("due_date"));
-                task.setCreateDate(rs.getDate("create_date"));
+                task.setDueDate(rs.getDate("due_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
+                task.setCreateDate(rs.getDate("create_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
                 tasks.add(task);
             }
             return tasks;
@@ -439,8 +439,8 @@ public class Database {
             if(rs.next()) {
                 Task task = new Task(rs.getString("label"));
                 task.setId(rs.getInt("id"));
-                task.setDueDate(rs.getDate("due_date"));
-                task.setCreateDate(rs.getDate("create_date"));
+                task.setDueDate(rs.getDate("due_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
+                task.setCreateDate(rs.getDate("create_date",Calendar.getInstance(TimeZone.getTimeZone("MST"))));
 
                 stmt = conn.prepareStatement("SELECT * FROM tagged_task WHERE task_id = ?;");
                 stmt.setInt(1,taskId);
