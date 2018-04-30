@@ -1,19 +1,24 @@
 #Final Project - Task Manager
 
 *Author Mayson Green, Alex Mussell
-*Class CS10 [DataBases] Spring 2018
+*Class CS410 [DataBases] Spring 2018
 
 ## Overview:
  This project is a task manager that can be used to keep track of all the things you need
- to get done in your busy life.
+ to get done in your busy life so you don't miss a thing.
 
 ## Manifest
 
     included files:
-      Credentials.java         - A class to store credentials needed for SSH and the Database connection
-      Database.java            - Handles all of the database transactions
-      SampleDataGenerator.java - Parses a csv file and creates the needed sql commands for inserting data
-      Task.java
+      Credentials.java          - A class to store credentials needed for SSH and the Database connection
+      Database.java             - Handles all of the database transactions
+      SampleDataGenerator.java  - Parses a .csv file and creates the needed SQL commands for inserting data
+      Task.java                 - A class used to represent a Task
+      TaskManager.java          - A class used to keep an interactive shell running and parse command line arguments
+      ToDoListManager.java      - Parses command line arguments needed for SSH and Database connection and starts interactive shell
+      example-data.sql          - SQL insert statments used to insert sample data into the Database
+      schema.sql                - DDL used to create the Database and tables
+
 ## Building the project
  A Jar file has been provided and can be run using the following command
 
