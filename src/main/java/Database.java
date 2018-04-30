@@ -296,7 +296,7 @@ public class Database {
             while(rs.next()) {
                 Task task = new Task(rs.getString("label"));
                 task.setId(rs.getInt("id"));
-                task.setDueDate(rs.getDate("due_date"));
+                task.setDueDate(new Date(rs.getDate("due_date").getTime()));
                 task.setCreateDate(rs.getDate("create_date"));
                 tasks.add(task);
             }

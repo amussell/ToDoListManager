@@ -57,7 +57,6 @@ INSERT INTO tagged_task (task_id,tag_name) VALUES (22,'wedding');
 INSERT INTO tagged_task (task_id,tag_name) VALUES (23,'wedding');
 INSERT INTO tagged_task (task_id,tag_name) VALUES (24,'wedding');
 INSERT INTO tagged_task (task_id,tag_name) VALUES (25,'wedding');
-INSERT INTO tagged_task (task_id,tag_name) VALUES (26,'wedding');
 INSERT INTO tagged_task (task_id,tag_name) VALUES (1,'421');
 INSERT INTO tagged_task (task_id,tag_name) VALUES (2,'421');
 INSERT INTO tagged_task (task_id,tag_name) VALUES (3,'421');
