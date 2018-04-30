@@ -85,7 +85,7 @@ public class TaskManager {
 
     private void due(String line) {
         Scanner scan = new Scanner(line);
-        String usage = "Usage: due <task id> <date MM/dd/yyyy>\ndue today\ndue soon";
+        String usage = "Usage: due <task id> <date yyyy-MM-dd>\ndue today\ndue soon";
         try {
             String next = scan.next();
             if(next.equals("today")) {
@@ -95,14 +95,13 @@ public class TaskManager {
             } else {
                 int taskId = 0;
                 Date dueDate = null;
-                SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                 taskId = Integer.parseInt(next);
                 dueDate = df.parse(scan.next());
                 setDue(taskId,dueDate);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println(usage);
         }
         scan.close();
