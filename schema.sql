@@ -17,3 +17,5 @@ CREATE TABLE tagged_task (task_id int,
                         FOREIGN KEY (task_id) REFERENCES task(id),
                         FOREIGN KEY (tag_name) REFERENCES tag(name),
                         PRIMARY KEY (task_id, tag_name));
+                        
+CREATE INDEX due_date_index ON task (due_date) USING BTREE;
