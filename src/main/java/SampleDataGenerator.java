@@ -22,7 +22,7 @@ public class SampleDataGenerator {
                 Scanner ls = new Scanner(line);
                 ls.useDelimiter(",");
                 String tag = ls.next();
-                String sql = "INSERT INTO tags (name) VALUES ('" + tag + "');";
+                String sql = "INSERT INTO tag (name) VALUES ('" + tag + "');";
                 System.out.println(sql);
             }
         } catch (FileNotFoundException e) {

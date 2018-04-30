@@ -25,12 +25,12 @@ INSERT INTO task (id,label,create_date,due_date,status) VALUES (24,'FIND OFFICIA
 INSERT INTO task (id,label,create_date,due_date,status) VALUES (25,'PLAN MEALS','2018-04-01','2018-06-05',0);
 INSERT INTO task (id,label,create_date,due_date,status) VALUES (26,'GIVE THIS GROUP AN A!','2018-04-01','2018-04-30',0);
 
-INSERT INTO tags (name) VALUES ('school');
-INSERT INTO tags (name) VALUES ('aclub');
-INSERT INTO tags (name) VALUES ('410');
-INSERT INTO tags (name) VALUES ('421');
-INSERT INTO tags (name) VALUES ('455');
-INSERT INTO tags (name) VALUES ('wedding');
+INSERT INTO tag (name) VALUES ('school');
+INSERT INTO tag (name) VALUES ('aclub');
+INSERT INTO tag (name) VALUES ('410');
+INSERT INTO tag (name) VALUES ('421');
+INSERT INTO tag (name) VALUES ('455');
+INSERT INTO tag (name) VALUES ('wedding');
 
 INSERT INTO tagged_task (task_id,tag_name) VALUES (1,'school');
 INSERT INTO tagged_task (task_id,tag_name) VALUES (2,'school');
