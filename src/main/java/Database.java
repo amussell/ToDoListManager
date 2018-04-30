@@ -445,7 +445,8 @@ public class Database {
                 stmt.setInt(1,taskId);
                 rs = stmt.executeQuery();
                 while(rs.next()) {
-                    task.addTag(rs.getString("tag_name"));
+                    String tag = rs.getString("tag_name");
+                    task.addTag(tag);
                 } return task;
             } else {
                 return null;
