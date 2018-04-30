@@ -72,9 +72,9 @@ public class SampleDataGenerator {
                 int status = Integer.parseInt(ls.next());
                 String sql;
                 if(due_date.length() != 0) {
-                    sql = "INSERT INTO task (id,label,create_date,due_date,status) VALUES (" + id + ",'" + label + "'," + create_date + "," + due_date + "," + status + ");";
+                    sql = "INSERT INTO task (id,label,create_date,due_date,status) VALUES (" + id + ",'" + label + "','" + create_date + "','" + due_date + "'," + status + ");";
                 } else {
-                    sql = "INSERT INTO task (id,label,create_date,status) VALUES (" + id + ",'" + label + "'," + create_date + "," + status + ");";
+                    sql = "INSERT INTO task (id,label,create_date,status) VALUES (" + id + ",'" + label + "','" + create_date + "'," + status + ");";
                 }
                 System.out.println(sql);
             }
